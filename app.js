@@ -45,6 +45,10 @@ const LogicCtrl = (() => {
 
 const UICtrl = (() => {
   //Private
+  const selectors = {
+    quiz: "#quiz"
+  };
+
   return {
 
   }
