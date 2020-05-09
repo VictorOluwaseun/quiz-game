@@ -64,6 +64,7 @@ const UICtrl = (() => {
   quiz: "#quiz",
   next: "#next",
   prev: "#prev",
+  submit: "#submit",
  };
 
  return {
