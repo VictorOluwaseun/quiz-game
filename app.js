@@ -77,6 +77,18 @@ const UICtrl = (() => {
   getSelectors: () => {
    return selectors;
   },
+  displayQuestion: (question) => {
+   document.querySelector(selectors.question).textContent = question.question;
+   const options = document.querySelector(selectors.options);
+   const answersEntries = Object.entries(question.answers); //https://zellwk.com/blog/looping-through-js-objects/ According to blog, better way to loop through an object
+   //  const s = answersEntries.map((el) => {
+   let optionGroup = "";
+   for (const [option, value] of answersEntries) {
+    optionGroup += `<div class="option" data-opt="${option}">${option.toUpperCase()}. ${value}</div>`;
+   }
+
+   options.innerHTML = optionGroup;
+  },
  };
 })();
 
@@ -90,9 +102,16 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
  const index = LogicCtrl.getCurrentIndex();
  console.log(index);
 
- const question = LogicCtrl.questionIterator(questions, index);
+ const questionDetails = LogicCtrl.questionIterator(questions, index);
 
- console.log(question.next());
+ const { value: question, done } = questionDetails.next();
+
+ //check if no next question
+
+ //Display question and options
+ UICtrl.displayQuestion(question);
+
+ console.log(questionDetails.next());
 
  //Display question
  //  UICtrl.displayQuestion();

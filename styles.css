@@ -12,7 +12,7 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 h1,
@@ -62,6 +62,7 @@ p {
 
 #question {
   margin-bottom: 6px;
+  min-width: 1200px;
 }
 
 /* .options{
