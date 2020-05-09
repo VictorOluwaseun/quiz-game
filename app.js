@@ -48,6 +48,7 @@ const QuestionCtrl = (() => {
 const LogicCtrl = (() => {
  //Private
  let currentIndex = 0;
+ let disableQuestions = false;
 
  return {
   getCurrentIndex: () => currentIndex,
@@ -64,6 +65,12 @@ const LogicCtrl = (() => {
       : { done: true };
     },
    };
+  },
+  setDisableQuestions: (bln) => {
+   disableQuestions = bln;
+  },
+  getDisableQuestions: () => {
+   return disableQuestions;
   },
  };
 })();
@@ -102,6 +109,26 @@ const UICtrl = (() => {
   hideShowBtnToggle: (btn, command) => {
    document.querySelector(btn).style.display = command;
   },
+  setBackgroundRight: (target) => {
+   if (!LogicCtrl.getDisableQuestions()) {
+    target.style.backgroundColor = "green";
+    target.style.color = "white";
+   } else {
+    document
+     .querySelectorAll(selectors.option)
+     .forEach((el) => (el.style.cursor = "not-allowed"));
+   }
+  },
+  setBackgroundWrong: (target) => {
+   if (!LogicCtrl.getDisableQuestions()) {
+    target.style.backgroundColor = "red";
+    target.style.color = "white";
+   } else {
+    document
+     .querySelectorAll(selectors.option)
+     .forEach((el) => (el.style.cursor = "not-allowed"));
+   }
+  },
  };
 })();
 
@@ -123,9 +150,11 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
     console.log(answer);
     if (answer === target.dataset.opt) {
      console.log(target);
-
-     //  UICtrl.setBackgroundRight();
+     UICtrl.setBackgroundRight(target);
+     LogicCtrl.setDisableQuestions(true);
     } else {
+     UICtrl.setBackgroundWrong(target);
+     LogicCtrl.setDisableQuestions(true);
     }
    }
   }
@@ -143,6 +172,7 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
  };
 
  const nextFunction = () => {
+  LogicCtrl.setDisableQuestions(false);
   let index = LogicCtrl.getCurrentIndex();
   const nextIndex = LogicCtrl.selectNextIndex(index);
   LogicCtrl.setCurrentIndex(nextIndex);
@@ -174,6 +204,7 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
  };
 
  const prevFunction = () => {
+  LogicCtrl.setDisableQuestions(false);
   let index = LogicCtrl.getCurrentIndex();
   const prevIndex = LogicCtrl.selectPrevIndex(index);
   LogicCtrl.setCurrentIndex(prevIndex);
@@ -193,28 +224,31 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
   }
  };
 
- LogicCtrl.setCurrentIndex(0);
-
- const index = LogicCtrl.getCurrentIndex();
- console.log(index);
-
- const questionDetails = LogicCtrl.questionIterator(questions, index);
-
- const { value: question, done } = questionDetails.next();
- QuestionCtrl.setCurrentQuestion(question);
-
- //check if no next question
-
- //Display question and options
- UICtrl.displayQuestion(question);
-
- console.log(questionDetails.next());
-
  //Display question
  //  UICtrl.displayQuestion();
 
  return {
   init: () => {
+   document.addEventListener("DOMContentLoaded", function () {
+    LogicCtrl.setCurrentIndex(0);
+    console.log(document.querySelector(questionNo).children[0].textContent);
+
+    const index = LogicCtrl.getCurrentIndex();
+    console.log(index);
+
+    const questionDetails = LogicCtrl.questionIterator(questions, index);
+
+    const { value: question, done } = questionDetails.next();
+    QuestionCtrl.setCurrentQuestion(question);
+
+    //check if no next question
+
+    //Display question and options
+    UICtrl.displayQuestion(question);
+
+    console.log(questionDetails.next());
+   });
+
    loadEventListners();
   },
  };
