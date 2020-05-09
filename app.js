@@ -29,6 +29,28 @@ const QuestionCtrl = (() => {
    },
    correctAnswer: "d",
   },
+  {
+   question:
+    "The behaviour of the instances present of a class inside a method is defined by what",
+   answers: {
+    a: "Method",
+    b: "Classes",
+    c: "Interfaces",
+    d: "Classes and Interfaces",
+   },
+   correctAnswer: "b",
+  },
+  {
+   question:
+    "The behaviour of the instances present of a class inside a method is defined by what?",
+   answers: {
+    a: "Method",
+    b: "Classes",
+    c: "Interfaces",
+    d: "Classes and Interfaces",
+   },
+   correctAnswer: "b",
+  },
  ];
  let currentQuestion = "";
  return {
@@ -49,12 +71,16 @@ const LogicCtrl = (() => {
  //Private
  let currentIndex = 0;
  let disableQuestions = false;
+ let userScore = 0;
 
  return {
   getCurrentIndex: () => currentIndex,
   setCurrentIndex: (num) => (currentIndex = num),
   selectNextIndex: (index) => ++index,
   selectPrevIndex: (index) => --index,
+  addScore: () => userScore++,
+  deductScore: () => userScore--,
+  getScore: () => userScore,
   questionIterator: (questions, startAt) => {
    let nextIndex = startAt;
 
@@ -82,6 +108,7 @@ const UICtrl = (() => {
   question: "#question",
   questionNo: "#question-no",
   score: "#score",
+  scoreDigit: "#score-digit",
   options: ".options",
   option: ".option",
   next: "#next",
@@ -129,11 +156,16 @@ const UICtrl = (() => {
      .forEach((el) => (el.style.cursor = "not-allowed"));
    }
   },
+  showScore: function (score) {
+   document.querySelector(selectors.scoreDigit).textContent = score;
+  },
  };
 })();
 
 const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
- const { quiz, next, prev, option, submit, questionNo } = UICtrl.getSelectors();
+ const { next, prev, option, submit, questionNo } = UICtrl.getSelectors();
+ let qNo = (document.querySelector(questionNo).children[0].textContent = 1);
+
  const questions = QuestionCtrl.getQuestions();
 
  //Load EventListners
@@ -152,7 +184,11 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
      console.log(target);
      UICtrl.setBackgroundRight(target);
      LogicCtrl.setDisableQuestions(true);
+     LogicCtrl.addScore();
+     UICtrl.showScore(LogicCtrl.getScore());
     } else {
+     LogicCtrl.deductScore();
+     UICtrl.showScore(LogicCtrl.getScore());
      UICtrl.setBackgroundWrong(target);
      LogicCtrl.setDisableQuestions(true);
     }
@@ -173,6 +209,7 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
 
  const nextFunction = () => {
   LogicCtrl.setDisableQuestions(false);
+  document.querySelector(questionNo).children[0].textContent++;
   let index = LogicCtrl.getCurrentIndex();
   const nextIndex = LogicCtrl.selectNextIndex(index);
   LogicCtrl.setCurrentIndex(nextIndex);
@@ -205,6 +242,7 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
 
  const prevFunction = () => {
   LogicCtrl.setDisableQuestions(false);
+  document.querySelector(questionNo).children[0].textContent--;
   let index = LogicCtrl.getCurrentIndex();
   const prevIndex = LogicCtrl.selectPrevIndex(index);
   LogicCtrl.setCurrentIndex(prevIndex);
@@ -221,6 +259,9 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
   } else {
    //Display question and options
    UICtrl.displayQuestion(question);
+   UICtrl.hideShowBtnToggle(prev, "block");
+   UICtrl.hideShowBtnToggle(next, "block");
+   UICtrl.hideShowBtnToggle(submit, "none");
   }
  };
 
@@ -231,7 +272,6 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
   init: () => {
    document.addEventListener("DOMContentLoaded", function () {
     LogicCtrl.setCurrentIndex(0);
-    console.log(document.querySelector(questionNo).children[0].textContent);
 
     const index = LogicCtrl.getCurrentIndex();
     console.log(index);
