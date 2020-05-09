@@ -62,6 +62,11 @@ const UICtrl = (() => {
  //Private
  const selectors = {
   quiz: "#quiz",
+  question: "#question",
+  questionNo: "#question-no",
+  score: "#score",
+  options: ".options",
+  option: ".option",
   next: "#next",
   prev: "#prev",
   submit: "#submit",
