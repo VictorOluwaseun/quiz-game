@@ -30,10 +30,18 @@ const QuestionCtrl = (() => {
    correctAnswer: "d",
   },
  ];
+ let currentQuestion = "";
  return {
   getQuestions: () => {
    return questions;
   },
+  getAnswers: () => {
+   return questions.answers;
+  },
+  setCurrentQuestion: (question) => {
+   currentQuestion = question;
+  },
+  getCurrentQuestion: () => currentQuestion,
  };
 })();
 
@@ -98,12 +106,29 @@ const UICtrl = (() => {
 })();
 
 const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
- const { quiz, next, prev, submit, questionNo } = UICtrl.getSelectors();
+ const { quiz, next, prev, option, submit, questionNo } = UICtrl.getSelectors();
  const questions = QuestionCtrl.getQuestions();
 
  //Load EventListners
  const loadEventListners = () => {
   document.addEventListener("click", clickHandler);
+ };
+
+ const optionSelect = function ({ target }) {
+  for (let i = 0; i < document.querySelectorAll(option).length; i++) {
+   const element = document.querySelectorAll(option)[i];
+   if (target === element) {
+    console.log(target.dataset.opt);
+    const answer = QuestionCtrl.getCurrentQuestion().correctAnswer;
+    console.log(answer);
+    if (answer === target.dataset.opt) {
+     console.log(target);
+
+     //  UICtrl.setBackgroundRight();
+    } else {
+    }
+   }
+  }
  };
 
  const clickHandler = (e) => {
@@ -112,6 +137,8 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
    nextFunction();
   } else if (e.target === document.querySelector(prev)) {
    prevFunction();
+  } else {
+   optionSelect(e);
   }
  };
 
@@ -122,6 +149,9 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
   const newIndex = LogicCtrl.getCurrentIndex();
   const questionDetails = LogicCtrl.questionIterator(questions, newIndex);
   const { value: question, done } = questionDetails.next();
+  // const { answers } = question;
+  QuestionCtrl.setCurrentQuestion(question);
+
   //check if no next question
   console.log(done);
 
@@ -130,6 +160,11 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
    UICtrl.hideShowBtnToggle(submit, "block");
   } else {
    //Display question and options
+   //  const a = (document
+   //   .querySelector(questionNo)
+   //   .getElementById("no").textContent = nextIndex);
+   //  console.log(a);
+
    UICtrl.hideShowBtnToggle(prev, "block");
    UICtrl.hideShowBtnToggle(next, "block");
    UICtrl.hideShowBtnToggle(submit, "none");
@@ -145,6 +180,7 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
   const newIndex = LogicCtrl.getCurrentIndex();
   const questionDetails = LogicCtrl.questionIterator(questions, newIndex);
   const { value: question, done } = questionDetails.next();
+  QuestionCtrl.setCurrentQuestion(question);
   //check if no next question
   console.log(done);
 
@@ -165,6 +201,7 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
  const questionDetails = LogicCtrl.questionIterator(questions, index);
 
  const { value: question, done } = questionDetails.next();
+ QuestionCtrl.setCurrentQuestion(question);
 
  //check if no next question
 
