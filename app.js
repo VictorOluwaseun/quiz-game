@@ -78,7 +78,11 @@ const LogicCtrl = (() => {
   setCurrentIndex: (num) => (currentIndex = num),
   selectNextIndex: (index) => ++index,
   selectPrevIndex: (index) => --index,
-  addScore: () => userScore++,
+  addScore: () => {
+   if (!disableQuestions) {
+    userScore++;
+   }
+  },
   deductScore: () => userScore--,
   getScore: () => userScore,
   questionIterator: (questions, startAt) => {
@@ -183,11 +187,11 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
     if (answer === target.dataset.opt) {
      console.log(target);
      UICtrl.setBackgroundRight(target);
-     LogicCtrl.setDisableQuestions(true);
      LogicCtrl.addScore();
+     LogicCtrl.setDisableQuestions(true);
      UICtrl.showScore(LogicCtrl.getScore());
     } else {
-     LogicCtrl.deductScore();
+     //  LogicCtrl.deductScore();
      UICtrl.showScore(LogicCtrl.getScore());
      UICtrl.setBackgroundWrong(target);
      LogicCtrl.setDisableQuestions(true);
