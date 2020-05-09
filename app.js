@@ -30,7 +30,9 @@ const QuestionCtrl = (() => {
     }
   ];
   return {
-
+    getQuestions: () => {
+      return questions;
+    }
   }
 })();
 
@@ -48,9 +50,18 @@ const UICtrl = (() => {
   }
 })();
 
-const App = (() => {
+const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
   //Private
-  return {
+  const questions = QuestionCtrl.getQuestions();
+  console.log(questions);
 
+  return {
+    init: () => {
+
+    }
   }
-})();
+})(QuestionCtrl, LogicCtrl, UICtrl);
+
+
+//Start App
+App.init();
