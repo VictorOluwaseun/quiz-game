@@ -50,7 +50,9 @@ const UICtrl = (() => {
   };
 
   return {
-
+    getSelectors = () => {
+      return selectors;
+    }
   }
 })();
 
