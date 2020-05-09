@@ -39,19 +39,11 @@ const QuestionCtrl = (() => {
 
 const LogicCtrl = (() => {
  //Private
- function QuestionIterator(questions) {
-  let nextIndex = 0;
+ let currentIndex = 0;
 
-  return {
-   next: function () {
-    return nextIndex < questions.length
-     ? { value: questions[nextIndex++], done: false }
-     : { done: true };
-   },
-  };
- }
  return {
-  pickQuestion: (questions) => {},
+  getCurrentIndex: () => currentIndex,
+  setCurrentIndex: (num) => (currentIndex = num),
   questionIterator: (questions, startAt) => {
    let nextIndex = startAt;
 
@@ -70,6 +62,8 @@ const UICtrl = (() => {
  //Private
  const selectors = {
   quiz: "#quiz",
+  next: "#next",
+  prev: "#prev",
  };
 
  return {
@@ -84,7 +78,13 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
 
  const questions = QuestionCtrl.getQuestions();
 
- const question = LogicCtrl.questionIterator(questions, 0);
+ LogicCtrl.setCurrentIndex(0);
+
+ const index = LogicCtrl.getCurrentIndex();
+ console.log(index);
+
+ const question = LogicCtrl.questionIterator(questions, index);
+
  console.log(question.next());
 
  //Display question
