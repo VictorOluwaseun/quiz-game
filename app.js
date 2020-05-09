@@ -44,6 +44,7 @@ const LogicCtrl = (() => {
  return {
   getCurrentIndex: () => currentIndex,
   setCurrentIndex: (num) => (currentIndex = num),
+  selectNextIndex: (index) => ++index,
   questionIterator: (questions, startAt) => {
    let nextIndex = startAt;
 
@@ -89,11 +90,15 @@ const UICtrl = (() => {
 
    options.innerHTML = optionGroup;
   },
+  hideShowBtnToggle: (btn, command) => {
+   document.querySelector(btn).style.display = command;
+  },
  };
 })();
 
 const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
- const { quiz, next } = UICtrl.getSelectors();
+ const { quiz, next, prev, submit } = UICtrl.getSelectors();
+ const questions = QuestionCtrl.getQuestions();
 
  //Load EventListners
  const loadEventListners = () => {
@@ -104,10 +109,29 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
   e.preventDefault();
   if (e.target === document.querySelector(next)) {
    nextFunction();
+  } else if (e.target === document.querySelector(prev)) {
+   //  prevFunction();
   }
  };
 
- const questions = QuestionCtrl.getQuestions();
+ const nextFunction = () => {
+  let index = LogicCtrl.getCurrentIndex();
+  const nextIndex = LogicCtrl.selectNextIndex(index);
+  LogicCtrl.setCurrentIndex(nextIndex);
+  const newIndex = LogicCtrl.getCurrentIndex();
+  const questionDetails = LogicCtrl.questionIterator(questions, newIndex);
+  const { value: question, done } = questionDetails.next();
+  //check if no next question
+  console.log(done);
+
+  if (done) {
+   UICtrl.hideShowBtnToggle(next, "none");
+   UICtrl.hideShowBtnToggle(submit, "block");
+  } else {
+   //Display question and options
+   UICtrl.displayQuestion(question);
+  }
+ };
 
  LogicCtrl.setCurrentIndex(0);
 
