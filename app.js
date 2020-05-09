@@ -65,6 +65,7 @@ const UICtrl = (() => {
   next: "#next",
   prev: "#prev",
   submit: "#submit",
+  navbtns: "#nav-btns",
  };
 
  return {
