@@ -93,7 +93,19 @@ const UICtrl = (() => {
 })();
 
 const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
- const { quiz } = UICtrl.getSelectors();
+ const { quiz, next } = UICtrl.getSelectors();
+
+ //Load EventListners
+ const loadEventListners = () => {
+  document.addEventListener("click", clickHandler);
+ };
+
+ const clickHandler = (e) => {
+  e.preventDefault();
+  if (e.target === document.querySelector(next)) {
+   nextFunction();
+  }
+ };
 
  const questions = QuestionCtrl.getQuestions();
 
@@ -117,7 +129,9 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
  //  UICtrl.displayQuestion();
 
  return {
-  init: () => {},
+  init: () => {
+   loadEventListners();
+  },
  };
 })(QuestionCtrl, LogicCtrl, UICtrl);
 
