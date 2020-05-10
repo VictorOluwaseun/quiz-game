@@ -76,8 +76,20 @@ const LogicCtrl = (() => {
  return {
   getCurrentIndex: () => currentIndex,
   setCurrentIndex: (num) => (currentIndex = num),
-  selectNextIndex: (index) => ++index,
-  selectPrevIndex: (index) => --index,
+  selectNextIndex: (index) => {
+   ++index;
+   if (index > 5) {
+    index = 5;
+   }
+   return index;
+  },
+  selectPrevIndex: (index) => {
+   --index;
+   if (index < 0) {
+    index = 0;
+   }
+   return index;
+  },
   addScore: () => {
    if (!disableQuestions) {
     userScore++;
@@ -90,8 +102,8 @@ const LogicCtrl = (() => {
 
    return {
     next: function () {
-     return nextIndex < questions.length
-      ? { value: questions[nextIndex++], done: false }
+     return nextIndex < questions.length - 1
+      ? { value: questions[++nextIndex], done: false }
       : { done: true };
     },
    };
@@ -192,6 +204,12 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
      UICtrl.showScore(LogicCtrl.getScore());
     } else {
      //  LogicCtrl.deductScore();
+
+     for (const ans of document.querySelectorAll(option)) {
+      if (ans.dataset.opt === answer) {
+       console.log(UICtrl.setBackgroundRight(ans));
+      }
+     }
      UICtrl.showScore(LogicCtrl.getScore());
      UICtrl.setBackgroundWrong(target);
      LogicCtrl.setDisableQuestions(true);
@@ -219,12 +237,14 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
   LogicCtrl.setCurrentIndex(nextIndex);
   const newIndex = LogicCtrl.getCurrentIndex();
   const questionDetails = LogicCtrl.questionIterator(questions, newIndex);
+  console.log(newIndex);
+
   const { value: question, done } = questionDetails.next();
   // const { answers } = question;
   QuestionCtrl.setCurrentQuestion(question);
 
   //check if no next question
-  console.log(done);
+  console.log(done, question);
 
   if (done) {
    UICtrl.hideShowBtnToggle(next, "none");
@@ -247,6 +267,8 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
  const prevFunction = () => {
   LogicCtrl.setDisableQuestions(false);
   document.querySelector(questionNo).children[0].textContent--;
+  if (document.querySelector(questionNo).children[0].textContent < 1)
+   document.querySelector(questionNo).children[0].textContent = 1;
   let index = LogicCtrl.getCurrentIndex();
   const prevIndex = LogicCtrl.selectPrevIndex(index);
   LogicCtrl.setCurrentIndex(prevIndex);
@@ -255,7 +277,7 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
   const { value: question, done } = questionDetails.next();
   QuestionCtrl.setCurrentQuestion(question);
   //check if no next question
-  console.log(done);
+  console.log(done, question);
 
   if (!question) {
    UICtrl.hideShowBtnToggle(prev, "none");
@@ -278,19 +300,18 @@ const App = ((QuestionCtrl, LogicCtrl, UICtrl) => {
     LogicCtrl.setCurrentIndex(0);
 
     const index = LogicCtrl.getCurrentIndex();
-    console.log(index);
+    // console.log(index);
 
     const questionDetails = LogicCtrl.questionIterator(questions, index);
 
     const { value: question, done } = questionDetails.next();
     QuestionCtrl.setCurrentQuestion(question);
+    console.log(question, done);
 
     //check if no next question
 
     //Display question and options
     UICtrl.displayQuestion(question);
-
-    console.log(questionDetails.next());
    });
 
    loadEventListners();
